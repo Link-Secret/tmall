@@ -68,8 +68,43 @@ public class ForeServletFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         /*通过路径地址得到对应的方法*/
+        /*/tmall*/
+        String contextPath = request.getServletContext().getContextPath();
+        request.getServletContext().setAttribute("contextPath",contextPath);
 
+        User user = (User) request.getSession().getAttribute("user");
+        int cartTableItemNumber = 0;
+        if(null != user) {
+            /*得到当前用户的订单项集合*/
+            List<OrderItem> ois = new OrderItemDAO().listByUser(user.getId());
+            /*遍历每个订单项，得到购物的总数*/
+            for(OrderItem oi : ois) {
+                cartTableItemNumber += oi.getNumber();
+            }
+        }
+        request.setAttribute("cartTableItemNumber",cartTableItemNumber);
 
+        List<Category> cs = (List<Category>) request.getAttribute("cs");
+        if(null == cs) {
+            cs = new CategoryDAO().list();
+            request.setAttribute("cs",cs);
+        }
+
+        /*/tmall/forehome*/
+        String uri = request.getRequestURI();
+        /*/forehome*/
+        uri = StringUtils.remove(uri,contextPath);
+        if(uri.startsWith("/fore") && !uri.startsWith("/foreServlet")) {
+            /*通过反射调用对应的方法*/
+            String method = StringUtils.substringAfterLast(uri,"/fore");
+            /*将方法放在request中*/
+            request.setAttribute("method",method);
+
+            /*转发：服务器端跳转*/
+            servletRequest.getRequestDispatcher("/foreServlet").forward(request,response);
+            return;
+        }
+        chain.doFilter(request,response);
     }
 
     @Override

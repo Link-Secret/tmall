@@ -59,55 +59,46 @@ $(function(){
 	
 });
 </script>
+<%--id是JS用，class是css用--%>
+<img src="img/site/catear.png" id="cater" class="catear">
 
-<img src="img/site/catear.png" id="catear" class="catear"/>
-	
 <div class="categoryWithCarousel">
 
+	<div class="headbar show1">
+		<div class="head">
+			<span style="margin-left: 10px" class="glyphicon glyphicon-th-list"></span>
+			<span class="margin-left:10px">商品分类</span>
+		</div>
 
-<div class="headbar show1">
-	<div class="head ">
-	
-		<span style="margin-left:10px" class="glyphicon glyphicon-th-list"></span>
-		<span style="margin-left:10px" >商品分类</span>
-		
+		<div class="rightMenu">
+			<span><a href=""><img src="img/site/chaoshi.png"></a> </span>
+			<span><a href=""><img src="img/site/guoji.png"></a> </span>
+
+			<c:forEach items="${cs}" var="c" varStatus="st">
+				<c:if test="${st.count<=4}">
+					<span>
+						<a href="forecategory?cid=${c.id}">
+							${c.name}
+						</a>
+					</span>
+				</c:if>
+			</c:forEach>
+		</div>
 	</div>
-	
-	<div class="rightMenu">
-		<span><a href=""><img src="img/site/chaoshi.png"/></a></span>
-		<span><a href=""><img src="img/site/guoji.png"/></a></span>
 
-		<c:forEach items="${cs}" var="c" varStatus="st">
-			<c:if test="${st.count<=4}">
-				<span>
-				<a href="forecategory?cid=${c.id}">
-					${c.name}
-				</a></span>			
-			</c:if>
-		</c:forEach>
+	<div style="position:relative">
+		<%@include file="categoryMenu.jsp"%>
 	</div>
-	
-</div>
 
-	
-<div style="position: relative">
-	<%@include file="categoryMenu.jsp" %>
-</div>
+	<div style="position: relative; left: 0; top: 0;">
+		<%@include file="productsAsideCategorys.jsp"%>
+	</div>
 
-<div style="position: relative;left: 0;top: 0;">
-	<%@include file="productsAsideCategorys.jsp" %>
-</div>
+	<%@include file="carousel.jsp"%>
 
-
-
-<%@include file="carousel.jsp" %>
-
-<div class="carouselBackgroundDiv">
-</div>
+	<div class="carouselBackgroundDiv"></div>
 
 </div>
-
-
 
 
 

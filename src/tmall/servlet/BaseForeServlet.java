@@ -31,40 +31,44 @@ public class BaseForeServlet extends HttpServlet{
 
     public void service(HttpServletRequest request, HttpServletResponse response) {
         try {
-
-            int start= 0;
+            /*默认分页规则*/
+            int start = 0;
             int count = 10;
+            /*如果修改，则按照修改后规则*/
             try {
                 start = Integer.parseInt(request.getParameter("page.start"));
             } catch (Exception e) {
 
             }
-
             try {
                 count = Integer.parseInt(request.getParameter("page.count"));
             } catch (Exception e) {
-            }
 
+            }
             Page page = new Page(start,count);
 
+            /*根据反射访问对应的方法*/
             String method = (String) request.getAttribute("method");
+            Method m = this.getClass().getMethod(method,HttpServletRequest.class,
+                                HttpServletResponse.class,Page.class);
+            String redirect = m.invoke(this,request,response,page).toString();
 
-            Method m = this.getClass().getMethod(method, javax.servlet.http.HttpServletRequest.class,
-                    javax.servlet.http.HttpServletResponse.class,Page.class);
+            /*即在这里，先跳转到对应的反射方法里面去，执行完方法就返回到这里*/
 
-            String redirect = m.invoke(this,request, response,page).toString();
-
-            if(redirect.startsWith("@"))
+            /*根据home方法的返回值"home.jsp"，即没有"%"开头，也没有"@",那么就调用
+            request.getRequestDispatcher(redirect).forward(request, response);
+            进行服务端跳转到 "home.jsp" 页面*/
+            /*根据对应方法的返回值，进行服务端跳转、客户端跳转、或者直接输出字符串*/
+            if(redirect.startsWith("@")){
                 response.sendRedirect(redirect.substring(1));
-            else if(redirect.startsWith("%"))
+            }else if(redirect.startsWith(("%"))){
                 response.getWriter().print(redirect.substring(1));
-            else
-                request.getRequestDispatcher(redirect).forward(request, response);
+            }else {
+                request.getRequestDispatcher(redirect).forward(request,response);
+            }
 
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
+        } catch(Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
         }
     }
 }
